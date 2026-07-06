@@ -35,6 +35,23 @@ app.use('/api/products', require('./routes/products'));
 app.use('/api/orders',   require('./routes/orders'));
 app.use('/api/ai',       require('./routes/ai'));
 
+app.get('/api/seed', async (_, res) => {
+  if (process.env.NODE_ENV !== 'production') return res.status(403).json({ message: 'Only in production' });
+  try {
+    const Product = require('./models/Product');
+    const User = require('./models/User');
+    const seed = require('./seed-data');
+    await Product.deleteMany();
+    await User.deleteMany();
+    await Product.insertMany(seed.products);
+    await User.create(seed.users[0]);
+    await User.create(seed.users[1]);
+    res.json({ message: '✅ Seeded successfully' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 app.get('/api/health', (_, res) => res.json({ status: 'NexaShop API running ✅' }));
 
 app.use((err, req, res, next) => {
