@@ -12,10 +12,10 @@ export default defineConfig({
     minify: 'esbuild',
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'chart-vendor': ['chart.js', 'react-chartjs-2'],
-          'ui-vendor':    ['react-hot-toast', 'zustand'],
+        manualChunks: (id) => {
+          if (id.includes('react-dom') || id.includes('react-router')) return 'react-vendor';
+          if (id.includes('chart.js') || id.includes('react-chartjs')) return 'chart-vendor';
+          if (id.includes('react-hot-toast') || id.includes('zustand')) return 'ui-vendor';
         },
       },
     },
