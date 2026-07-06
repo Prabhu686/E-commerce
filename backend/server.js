@@ -17,7 +17,12 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin || allowedOrigins.some(o => origin.startsWith(o))) return cb(null, true);
+    if (!origin) return cb(null, true);
+    if (
+      origin.includes('localhost') ||
+      origin.includes('vercel.app') ||
+      (process.env.FRONTEND_URL && origin.startsWith(process.env.FRONTEND_URL))
+    ) return cb(null, true);
     cb(new Error('Not allowed by CORS'));
   },
   credentials: true,
